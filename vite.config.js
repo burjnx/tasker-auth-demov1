@@ -4,6 +4,6 @@ import tailwindcss from "@tailwindcss/vite";
 
 // https://vite.dev/config/
 export default defineConfig({
-  base: "/tasker-auth-demov1",
+  base: "/",
   plugins: [react(), tailwindcss()],
 });
