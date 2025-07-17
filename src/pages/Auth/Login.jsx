@@ -41,7 +41,7 @@ function Login() {
           <h2 className="text-[21px] font-bold text-black mt-[60px]">
             WELCOME BACK!
           </h2>
-          <p className="text-[16px] text-slate-400 mt-[5px] mb-6">
+          <p className="text-base text-slate-400 mt-[5px] mb-6">
             We missed you! Please enter your details
           </p>
 

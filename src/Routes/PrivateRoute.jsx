@@ -1,8 +1,10 @@
 import React from "react";
-import { Outlet } from "react-router-dom";
+import { Navigate, Outlet } from "react-router-dom";
 
-function PrivateRoute({ allowedRoles }) {
-  return <Outlet />;
+function PrivateRoute() {
+  const user = JSON.parse(localStorage.getItem("user") || "null");
+
+  return user ? <Outlet /> : <Navigate to="/login" replace />;
 }
 
 export default PrivateRoute;

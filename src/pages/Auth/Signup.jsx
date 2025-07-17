@@ -132,13 +132,13 @@ function Signup() {
             </button>
           </div>
           <p className="font-medium text-[15px] text-[#222222] mt-3">
-            Dont have an account?{""}{" "}
+            Already have an account?{""}{" "}
             <Link
               className="font-medium text-[#903DE2A1] underline"
-              to="/signup"
+              to="/login"
             >
               {" "}
-              Signup{" "}
+              SignIn{" "}
             </Link>
           </p>
         </form>

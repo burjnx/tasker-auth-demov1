@@ -1,7 +1,11 @@
-import React from "react";
-
-function Projects() {
-  return <div>Projects</div>;
+import React from 'react'
+import Header from "../../components/Header" 
+const Projects = () => {
+  return (
+    <div>
+      {/* <Header/> */}
+    </div>
+  )
 }
 
-export default Projects;
+export default Projects
