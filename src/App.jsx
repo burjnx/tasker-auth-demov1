@@ -4,12 +4,12 @@ import Login from "./pages/Auth/Login";
 import Signup from "./pages/Auth/Signup";
 import Dashboard from "./pages/User/Dashboard";
 import Projects from "./pages/User/Projects";
-import Recent from "./pages/User/Recent";
 import Settings from "./pages/User/Settings";
 import PrivateRoute from "./Routes/PrivateRoute";
 import OTPVerification from "./pages/Auth/OTPVerification";
 import Thanks from "./pages/Auth/Thanks";
 import SharedLayout from "./components/SharedLayout";
+import Teams from "./pages/User/Teams";
 
 function App() {
   return (
@@ -34,12 +34,10 @@ function App() {
             <Route path="/" element={<SharedLayout />}>
               <Route path="dashboard" element={<Dashboard />} />
               <Route path="projects" element={<Projects />} />
-              <Route path="recent" element={<Recent />} />
+              <Route path="teams" element={<Teams />} />
               <Route path="settings" element={<Settings />} />
               {/* </Route> */}
             </Route>
-
-
           </Routes>
         </Router>
       </div>
