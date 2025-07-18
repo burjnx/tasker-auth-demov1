@@ -47,7 +47,7 @@ const Sidebar = () => {
             <RiBook2Fill size={20} />
             <span> Projects </span>
           </NavLink>
-          <NavLink to="/recent" className={linkClass}>
+          <NavLink to="/teams" className={linkClass}>
             <BsFillPeopleFill size={20} />
             <span>Teams</span>
           </NavLink>

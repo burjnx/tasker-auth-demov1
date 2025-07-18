@@ -29,7 +29,7 @@ const dummyTasks = [
     status: "Overdue",
   },
   {
-    id: 1,
+    id: 4,
     title: "Design Login UI",
     project: "Tasker App",
     type: "Design",
@@ -37,7 +37,7 @@ const dummyTasks = [
     status: "Completed",
   },
   {
-    id: 2,
+    id: 5,
     title: "API Integration",
     project: "Tasker App",
     type: "Development",
@@ -45,7 +45,7 @@ const dummyTasks = [
     status: "Pending",
   },
   {
-    id: 3,
+    id: 6,
     title: "Fix deadline bug",
     project: "Tasker Admin",
     type: "Bug",
@@ -53,7 +53,7 @@ const dummyTasks = [
     status: "Overdue",
   },
   {
-    id: 1,
+    id: 7,
     title: "Design Login UI",
     project: "Tasker App",
     type: "Design",
@@ -61,7 +61,7 @@ const dummyTasks = [
     status: "Completed",
   },
   {
-    id: 2,
+    id: 8,
     title: "API Integration",
     project: "Tasker App",
     type: "Development",
@@ -69,7 +69,7 @@ const dummyTasks = [
     status: "Pending",
   },
   {
-    id: 3,
+    id: 9,
     title: "Fix deadline bug",
     project: "Tasker Admin",
     type: "Bug",
@@ -77,7 +77,7 @@ const dummyTasks = [
     status: "Overdue",
   },
   {
-    id: 1,
+    id: 10,
     title: "Design Login UI",
     project: "Tasker App",
     type: "Design",
@@ -85,7 +85,7 @@ const dummyTasks = [
     status: "Completed",
   },
   {
-    id: 2,
+    id: 11,
     title: "API Integration",
     project: "Tasker App",
     type: "Development",
@@ -93,7 +93,7 @@ const dummyTasks = [
     status: "Pending",
   },
   {
-    id: 3,
+    id: 12,
     title: "Fix deadline bug",
     project: "Tasker Admin",
     type: "Bug",
