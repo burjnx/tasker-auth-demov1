@@ -2,6 +2,9 @@ import React, { useEffect, useState } from "react";
 import Header from "../../components/Header";
 import ProjectCard from "../../components/ProjectCard";
 import ProjectTabs from "../../components/ProjectTabs";
+import EmptyImage from "../../assets/images/pana.png";
+import AllProjectsTable from "../../components/AllProjectsTable";
+
 const Projects = () => {
   const [activeTab, setActiveTab] = useState("recent");
   const [allProjects, setAllProjects] = useState([]);
@@ -191,11 +194,24 @@ const Projects = () => {
     );
   } else if (projectsDisplay.length === 0) {
     content = (
-      <div className="text-center py-10 text-lg text-gray-400">
-        {activeTab === "recent"
-          ? "No recent projects found."
-          : "No favourite projects yet. Click the heart icon to add it to favourites!"}
-      </div>
+      <>
+        <div className="text-center py-10 text-lg text-gray-400">
+          {activeTab === "recent"
+            ? "No recent projects found."
+            : "No favourite projects yet. Click the heart icon to add it to favourites!"}
+        </div>
+        <div className="flex flex-col items-center justify-center mt-8 min-h-[200px] gap-9 ">
+          <div className="h-full flex flex-col ">
+            <img src={EmptyImage} alt="No tasks" className=" mb-4" />
+            <p className="text-[#4D4D4D] font-medium text-sm">
+              No tasks created yet
+            </p>
+          </div>
+          <button className="bg-[#903DE2] text-white rounded-lg px-4 py-1.5 text-base font-medium hover:bg-purple-700 transition-colors duration-200 cursor-pointer">
+            New Project
+          </button>
+        </div>
+      </>
     );
   } else {
     content = (
@@ -212,12 +228,20 @@ const Projects = () => {
   }
 
   return (
-    <div>
+    <div className="h-full flex flex-col">
       {/* <Header/> */}
       <Header />
-      <div className="min-h-sceeen p-5 ">
+      <div className="p-5 ">
         <ProjectTabs activeTab={activeTab} onTabChange={handleTabChange} />
         {content}{" "}
+      </div>
+      <div className="mt-10 h-full overflow-hidden">
+        {projectsDisplay.length > 0 && (
+          <AllProjectsTable
+            allProjects={allProjects}
+            onToggleFavourite={toggleFavourite}
+          />
+        )}
       </div>
     </div>
   );
