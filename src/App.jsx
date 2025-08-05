@@ -10,6 +10,7 @@ import OTPVerification from "./pages/Auth/OTPVerification";
 import Thanks from "./pages/Auth/Thanks";
 import SharedLayout from "./components/SharedLayout";
 import Teams from "./pages/User/Teams";
+import ProjectDetail from "./pages/User/ProjectDetail";
 
 function App() {
   return (
@@ -34,6 +35,7 @@ function App() {
             <Route path="/" element={<SharedLayout />}>
               <Route path="dashboard" element={<Dashboard />} />
               <Route path="projects" element={<Projects />} />
+              <Route path="projects/:id" element={<ProjectDetail />} />
               <Route path="teams" element={<Teams />} />
               <Route path="settings" element={<Settings />} />
               {/* </Route> */}

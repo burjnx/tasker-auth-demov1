@@ -1,7 +1,7 @@
 import React from "react";
 import { AiOutlineHeart, AiFillHeart } from "react-icons/ai";
 
-function ProjectCard({ project, onToggleFavourite }) {
+function ProjectCard({ project, onToggleFavourite, onSelectProject }) {
   const { name, id, progress, isFavourite } = project;
   const getCardBackgroundColor = (projectId) => {
     const colors = {
@@ -18,9 +18,10 @@ function ProjectCard({ project, onToggleFavourite }) {
 
   return (
     <div
-      className="rounded-xl px-5 pt-2 text-whit flex flex-col min-h-[140px] min-w-[240px] shadow-md relative
+      className="rounded-xl px-5 pt-2 text-whit flex flex-col min-h-[140px] min-w-[240px] shadow-md relative cursor-pointer hover:scale-[1.02] transition-transform duration-200
       "
       style={{ backgroundColor: getCardBackgroundColor(id) }}
+      onClick={() => onSelectProject(id)}
     >
       <div className="flex flex-col justify-between items-start mb-1">
         <h3 className="text-[16px] text-white font-bold mt-5">{name}</h3>
@@ -33,7 +34,10 @@ function ProjectCard({ project, onToggleFavourite }) {
       </div>
       <span
         className="absolute right-2 cursor-pointer flex items-center justify-center w-8 h-8"
-        onClick={() => onToggleFavourite(id)}
+        onClick={(e) => {
+          e.stopPropagation();
+          onToggleFavourite(id);
+        }}
         role="button"
         aria-label={
           isFavourite ? "Remove from favourites" : "Add to favourites"
