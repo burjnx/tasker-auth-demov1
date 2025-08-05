@@ -3,7 +3,7 @@ import { AiOutlineHeart, AiFillHeart } from "react-icons/ai";
 import { HiOutlineDotsHorizontal } from "react-icons/hi";
 import { IoMdShare } from "react-icons/io";
 
-function AllProjectsTable({ allProjects, onToggleFavourite }) {
+function AllProjectsTable({ allProjects, onToggleFavourite, onSelectProject }) {
   const [projectTypeFilter, setProjectTypeFilter] = useState("All");
   const [sortBy, setSortBy] = useState("dateUpdated");
   const [sortOrder, setSortOrder] = useState("desc");
@@ -113,11 +113,18 @@ function AllProjectsTable({ allProjects, onToggleFavourite }) {
             {filteredProjects.length === 0
               ? null
               : filteredProjects.map((project) => (
-                  <tr key={project.id}>
+                  <tr
+                    key={project.id}
+                    onClick={() => onSelectProject(project.id)}
+                    className="hover:bg-[#F2F2F2] cursor-pointer"
+                  >
                     <td className="py-3 px-4 text-gray-400 border-[#F2F2F2] border-b">
                       <span
                         className="cursor-pointer flex items-center justify-center w-8 h-8"
-                        onClick={() => onToggleFavourite(project.id)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onToggleFavourite(project.id);
+                        }}
                         role="button"
                         aria-label={`Toggle favourite for ${project.name}`}
                       >

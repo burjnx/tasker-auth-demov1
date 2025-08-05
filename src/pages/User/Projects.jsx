@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Header from "../../components/Header";
+import mockProjects from "../../mock/project";
 import ProjectCard from "../../components/ProjectCard";
 import ProjectTabs from "../../components/ProjectTabs";
 import EmptyImage from "../../assets/images/pana.png";
@@ -11,133 +13,13 @@ const Projects = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const navigate = useNavigate();
+
   useEffect(() => {
     const fetchProjects = async () => {
       setLoading(true);
       try {
         await new Promise((resolve) => setTimeout(resolve, 800));
-        const mockProjects = [
-          {
-            id: "PRJ001",
-            name: "Nithub Tasker Project",
-            progress: 40,
-            isFavourite: true,
-            type: "Team",
-            teamLead: "Habeeb Fajimite",
-            dateCreated: "2025-07-01",
-            dateUpdated: "2025-07-10",
-          },
-          {
-            id: "PRJ002",
-            name: "Nithub Ai Therapist",
-            progress: 80,
-            isFavourite: true,
-            type: "Team",
-            teamLead: "Amaike Seriah",
-            dateCreated: "2025-07-01",
-            dateUpdated: "2025-07-01",
-          },
-          {
-            id: "PRJ003",
-            name: "Nithub C0- Working..",
-            progress: 70,
-            isFavourite: true,
-            type: "Team",
-            teamLead: "David Emmanuel",
-            dateCreated: "2025-06-01",
-            dateUpdated: "2025-07-01",
-          },
-          {
-            id: "PRJ004",
-            name: "Nithub Ai Job-Search",
-            progress: 80,
-            isFavourite: true,
-            type: "Team",
-            teamLead: "Habeeb Fajimite",
-            dateCreated: "2025-07-01",
-            dateUpdated: "2025-07-05",
-          },
-          {
-            id: "PRJ005",
-            name: "Nithub Mobile App..",
-            progress: 60,
-            isFavourite: false,
-            type: "Team",
-            teamLead: "Tadelola Aduloju",
-            dateCreated: "2025-06-01",
-            dateUpdated: "2025-06-24",
-          },
-          {
-            id: "PRJ006",
-            name: "Nithub Marketing..",
-            progress: 40,
-            isFavourite: false,
-            type: "Team",
-            teamLead: "Quadri Damilare",
-            dateCreated: "2025-06-01",
-            dateUpdated: "2025-07-02",
-          },
-          {
-            id: "PRJ007",
-            name: "Nithub Ai Language",
-            progress: 34,
-            isFavourite: false,
-            type: "Team",
-            teamLead: "Habeeb Fajimite",
-            dateCreated: "2025-07-01",
-            dateUpdated: "2025-07-07",
-          },
-          {
-            id: "PRJ008",
-            name: "Eccormerce Web App",
-            progress: 56,
-            isFavourite: false,
-            type: "Solo",
-            teamLead: "Amaike Seriah",
-            dateCreated: "2025-06-01",
-            dateUpdated: "2025-07-09",
-          },
-          {
-            id: "PRJ009",
-            name: "Mobile App Design",
-            progress: 78,
-            isFavourite: false,
-            type: "Solo",
-            teamLead: "David Emmanuel",
-            dateCreated: "2025-05-01",
-            dateUpdated: "2025-06-10",
-          },
-          {
-            id: "PRJ0010",
-            name: "Design System V2",
-            progress: 60,
-            isFavourite: false,
-            type: "Solo",
-            teamLead: "Tadelola Aduloju",
-            dateCreated: "2025-04-01",
-            dateUpdated: "2025-05-10",
-          },
-          {
-            id: "PRJ0011",
-            name: "Internal Wiki Setup",
-            progress: 25,
-            isFavourite: false,
-            type: "Solo",
-            teamLead: "Quadri Damilare",
-            dateCreated: "2025-06-01",
-            dateUpdated: "2025-06-10",
-          },
-          {
-            id: "PRJ0012",
-            name: "Nithub Website",
-            progress: 0,
-            isFavourite: false,
-            type: "Solo",
-            teamLead: "Habeeb Fajimite",
-            dateCreated: "2025-07-01",
-            dateUpdated: "2025-07-10",
-          },
-        ];
         setAllProjects(mockProjects);
       } catch (err) {
         setError("Failed to fetch Projects.");
@@ -151,6 +33,10 @@ const Projects = () => {
 
   const handleTabChange = (tab) => {
     setActiveTab(tab);
+  };
+
+  const handleProjectSelect = (projectId) => {
+    navigate(`/projects/${projectId}`);
   };
 
   const toggleFavourite = (projectId) => {
@@ -215,12 +101,13 @@ const Projects = () => {
     );
   } else {
     content = (
-      <div className="flex space-x-5 overflow-x-auto pb-4 custom-scrollbar">
+      <div className="flex space-x-5 overflow-x-auto py-2 pl-2 custom-scrollbar">
         {projectsDisplay.map((project) => (
           <ProjectCard
             key={project.id}
             project={project}
             onToggleFavourite={toggleFavourite}
+            onSelectProject={handleProjectSelect}
           />
         ))}
       </div>
@@ -240,6 +127,7 @@ const Projects = () => {
           <AllProjectsTable
             allProjects={allProjects}
             onToggleFavourite={toggleFavourite}
+            onSelectProject={handleProjectSelect}
           />
         )}
       </div>
