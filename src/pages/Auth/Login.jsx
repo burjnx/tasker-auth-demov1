@@ -32,6 +32,11 @@ function Login() {
     }
 
     setError({});
+    // 🧪 Mock login success (you'll replace this with backend later)
+    localStorage.setItem("isAuthenticated", "true");
+
+    // ✅ Navigate to dashboard
+    navigate("/dashboard");
   }
 
   return (
