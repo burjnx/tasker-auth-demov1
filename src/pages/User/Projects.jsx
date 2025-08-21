@@ -115,7 +115,7 @@ const Projects = () => {
   }
 
   return (
-    <div className="h-full flex flex-col">
+    <div className="flex flex-col">
       {/* <Header/> */}
       <Header />
       <div className="p-5 ">

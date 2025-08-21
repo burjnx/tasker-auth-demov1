@@ -16,7 +16,7 @@ function App() {
   return (
     <>
       <div>
-        <Router>
+        <Router basename={import.meta.env.BASE_URL}>
           <Routes>
             <Route path="/" element={<Login />} />
             <Route path="/login" element={<Login />} />
