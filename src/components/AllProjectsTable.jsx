@@ -7,7 +7,7 @@ function AllProjectsTable({ allProjects, onToggleFavourite, onSelectProject }) {
   const [projectTypeFilter, setProjectTypeFilter] = useState("All");
   const [sortBy, setSortBy] = useState("dateUpdated");
   const [sortOrder, setSortOrder] = useState("desc");
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm] = useState("");
 
   const filteredProjects = allProjects
     .filter((project) => {
@@ -86,7 +86,7 @@ function AllProjectsTable({ allProjects, onToggleFavourite, onSelectProject }) {
           </button>
         </div>
       </div>
-      <div className="overflow-y-auto custom-scrollbar flex-grow rounded-lg min-h-0 flex flex-col h-full">
+      <div className="overflow-auto custom-scrollbar flex-grow rounded-lg min-h-0 flex flex-col h-full">
         <table className="w-full text-left table-auto border-separate border-spacing-0">
           <thead className="sticky top-0  z-10 text-black text-sm uppercase">
             <tr className="bg-[#F2F2F2] text-black text-sm uppercase">

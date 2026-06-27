@@ -1,5 +1,5 @@
 import React from "react";
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import {
   LayoutDashboard,
   FolderKanban,
@@ -14,8 +14,8 @@ import { IoSettingsSharp } from "react-icons/io5";
 import { BsFillPeopleFill } from "react-icons/bs";
 import { IoIosHelpCircle } from "react-icons/io";
 
-const Sidebar = () => {
-  const navigate = useNavigate();
+const Sidebar = ({ onClose }) => {
+
 
   const baseLinkClass =
     "flex items-center gap-2 py-[10px] px-4 text-white hover:[#AA6AE9] font-semi-bold text-[20px] rounded text-left shadow-[0_0_20px_11px_#903DE24D]";
@@ -34,31 +34,31 @@ const Sidebar = () => {
   };
 
   return (
-    <div className="w-64 min-h-[90vh] m-4 rounded-xl p-4 flex flex-col justify-between bg-[#903DE2] backdrop-blur-2xl shadow-[0_0_20px_11px_#903DE24D]">
+    <div className="w-64 h-[95vh] m-2 md:m-4 md:min-h-[90vh] rounded-xl p-4 flex flex-col justify-between bg-[#903DE2] backdrop-blur-2xl shadow-[0_0_20px_11px_#903DE24D]">
       {/* Top Section */}
-      <div>
+      <div className="flex-1 overflow-y-auto no-scrollbar">
         <h2 className="text-xl font-bold text-white my-6">Tasker by Nithub</h2>
         <nav className="space-y-6">
-          <NavLink to="/dashboard" className={linkClass}>
+          <NavLink to="/dashboard" className={linkClass} onClick={onClose}>
             <MdDashboard size={20} />
             <span>Dashboard</span>
           </NavLink>
-          <NavLink to="/projects" className={linkClass}>
+          <NavLink to="/projects" className={linkClass} onClick={onClose}>
             <RiBook2Fill size={20} />
             <span> Projects </span>
           </NavLink>
-          <NavLink to="/teams" className={linkClass}>
+          <NavLink to="/teams" className={linkClass} onClick={onClose}>
             <BsFillPeopleFill size={20} />
             <span>Teams</span>
           </NavLink>
-          <NavLink to="/settings" className={linkClass}>
+          <NavLink to="/settings" className={linkClass} onClick={onClose}>
             <IoSettingsSharp size={20} />
             <span>Settings</span>
           </NavLink>
         </nav>
       </div>
 
-      <div className="space-y-2 ">
+      <div className="space-y-2 mt-4">
         <button
           className={baseLinkClass}
           onClick={() => alert("Help not implemented yet")}

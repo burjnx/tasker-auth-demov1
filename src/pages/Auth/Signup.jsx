@@ -60,7 +60,7 @@ function Signup() {
 
         <form
           onSubmit={handleSignUp}
-          className="w-[580px] flex justify-center flex-col items-center"
+          className="w-full md:w-[580px] max-w-full flex justify-center flex-col items-center"
         >
           <div className="">
             <Input
@@ -71,7 +71,7 @@ function Signup() {
               type="text"
             />
             {error.firstName && (
-              <p className="text-red-500 text-xs mt-1 mr-[100px]">
+              <p className="text-red-500 text-xs mt-1 mr-auto ml-1">
                 {error.firstName}
               </p>
             )}
@@ -83,7 +83,7 @@ function Signup() {
               type="text"
             />
             {error.lastName && (
-              <p className="text-red-500 text-xs mt-1 mr-[100px]">
+              <p className="text-red-500 text-xs mt-1 mr-auto ml-1">
                 {error.lastName}
               </p>
             )}
@@ -95,7 +95,7 @@ function Signup() {
               type="text"
             />
             {error.email && (
-              <p className="text-red-500 text-xs mt-1 mr-[100px]">
+              <p className="text-red-500 text-xs mt-1 mr-auto ml-1">
                 {error.email}
               </p>
             )}
@@ -107,7 +107,7 @@ function Signup() {
               type="password"
             />
             {error.password && (
-              <p className="text-red-500 text-xs mt-1 mr-[100px]">
+              <p className="text-red-500 text-xs mt-1 mr-auto ml-1">
                 {error.password}
               </p>
             )}
@@ -119,7 +119,7 @@ function Signup() {
               type="password"
             />
             {error.reTypePassword && (
-              <p className="text-red-500 text-xs mt-1 mr-[100px]">
+              <p className="text-red-500 text-xs mt-1 mr-auto ml-1">
                 {error.reTypePassword}
               </p>
             )}
