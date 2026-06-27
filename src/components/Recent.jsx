@@ -33,7 +33,7 @@ const Recent = () => {
 
     return (
 
-        <div className="mt-10 space-y-6 p-4 border border-[#CCCCCC] rounded-xl bg-white w-1/2">
+        <div className="mt-10 space-y-6 p-4 border border-[#CCCCCC] rounded-xl bg-white w-full md:w-1/2">
             {/* Header */}
             <div className="flex justify-between items-center">
                 <div className="text-xl font-medium flex items-center gap-2">

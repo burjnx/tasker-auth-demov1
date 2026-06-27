@@ -54,7 +54,7 @@ function ProjectTaskTable({ projectHierarchy }) {
     setExpanded((prev) => ({ ...prev, [id]: !prev[id] }));
   };
   return (
-    <div className="flex-grow min-h-0 overflow-y-auto custom-scrollbar rounded-xl border border-[#999999]">
+    <div className="flex-grow min-h-0 overflow-auto custom-scrollbar rounded-xl border border-[#999999]">
       <table className="w-full text-left table-auto border-collapse">
         <thead>
           <tr className="bg-[#F2F2F2] text-black text-[14px] uppercase sticky top-0 z-10 font-semibold">

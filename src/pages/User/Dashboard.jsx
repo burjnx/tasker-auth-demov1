@@ -11,7 +11,7 @@ const Dashboard = () => {
       <div className='mt-6'>
         <h2 className='font-medium text-xl mb-4'>Dashboard</h2>
         <DashboardCard />
-        <div className='md:flex items-start gap-3'>
+        <div className='flex flex-col md:flex-row items-start gap-3'>
           <TaskSection />
           <Recent/>
         </div>

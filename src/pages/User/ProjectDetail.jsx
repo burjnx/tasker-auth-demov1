@@ -15,7 +15,7 @@ import { GoKebabHorizontal } from "react-icons/go";
 import { BsFillKanbanFill } from "react-icons/bs";
 import { IoIosListBox } from "react-icons/io";
 import { RiTableFill } from "react-icons/ri";
-import ProjectTaskTable from "../../components/projectTaskTable";
+import ProjectTaskTable from "../../components/ProjectTaskTable";
 import emptyImage from "../../assets/images/pana.png";
 
 const getInitialAvaterColor = (name) => {

@@ -42,7 +42,7 @@ function Login() {
   return (
     <div>
       <AuthLayout>
-        <div className="pb-12 md: w-[900%] lg:w-[600px] flex flex-col items-center border rounded-[20px] border-[#E0E0E0] ">
+        <div className="pb-12 md: w-full lg:w-[600px] flex flex-col items-center border rounded-[20px] border-[#E0E0E0] ">
           <h2 className="text-[21px] font-bold text-black mt-[60px]">
             WELCOME BACK!
           </h2>
@@ -51,7 +51,7 @@ function Login() {
           </p>
 
           <form
-            className="w-[580px] flex justify-center flex-col items-center"
+            className="w-full max-w-[580px] px-4 flex justify-center flex-col items-center"
             onSubmit={handleLogin}
           >
             <Input
@@ -62,7 +62,7 @@ function Login() {
               type="text"
             />
             {error.email && (
-              <p className="text-red-500 text-xs mt-1 mr-[120px]">
+              <p className="text-red-500 text-xs mt-1 mr-auto ml-1">
                 {error.email}
               </p>
             )}
@@ -73,7 +73,7 @@ function Login() {
               placeholder="Enter Password"
               type="password"
             />
-            <div className="flex justify-between items-center w-[326.42px] mt-3">
+            <div className="flex justify-between items-center w-full md:w-[326.42px] mt-3">
               <label className="inline-flex items-center space-x-2">
                 <input type="checkbox" class="form-checkbox text-[#D7D7D7]" />
                 <span className="text-[12px] text-[#D7D7D7]">Remember me</span>
