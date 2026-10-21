@@ -1,17 +1,30 @@
 import React from "react";
-import { BsFilePersonFill } from "react-icons/bs";
 
-function TeamCard({ teams }) {
+function TeamCard({ member, color, projectsLed }) {
+  const initials = member.name
+    .split(" ")
+    .map((w) => w[0])
+    .slice(0, 2)
+    .join("")
+    .toUpperCase();
+
   return (
     <div
-      style={{ borderColor: teams.color }}
-      className={`flex flex-col justify-center items-center gap-3 py-3 border-2 w-full md:w-[245px] h-[194] rounded-[12px]`}
+      style={{ borderColor: color }}
+      className="flex w-full flex-col items-center gap-3 rounded-[12px] border-2 px-4 py-6 text-center"
     >
-      <BsFilePersonFill size={80} color={teams.color} />
-      <h3 style={{ color: teams.color }}>
-        {teams.firstName} {teams.lastName}
+      <div
+        className="flex size-16 items-center justify-center rounded-full text-xl font-bold text-white"
+        style={{ backgroundColor: color }}
+      >
+        {initials}
+      </div>
+      <h3 className="font-semibold" style={{ color }}>
+        {member.name}
       </h3>
-      <p style={{ color: teams.color }}>{teams.email}</p>
+      <p className="text-sm text-[#808080]">
+        {projectsLed > 0 ? `Leads ${projectsLed} project${projectsLed > 1 ? "s" : ""}` : "Team member"}
+      </p>
     </div>
   );
 }

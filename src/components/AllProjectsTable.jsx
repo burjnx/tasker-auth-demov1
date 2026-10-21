@@ -1,176 +1,144 @@
 import React, { useState } from "react";
 import { AiOutlineHeart, AiFillHeart } from "react-icons/ai";
-import { HiOutlineDotsHorizontal } from "react-icons/hi";
-import { IoMdShare } from "react-icons/io";
 
-function AllProjectsTable({ allProjects, onToggleFavourite, onSelectProject }) {
-  const [projectTypeFilter, setProjectTypeFilter] = useState("All");
+function progressColor(progress) {
+  if (progress >= 70) return "text-[#319F43] bg-[#E1F7E6]";
+  if (progress >= 40) return "text-[#B7860B] bg-[#FFF8E5]";
+  return "text-[#FF264D] bg-[#FFE7EB]";
+}
+
+function AllProjectsTable({ allProjects, search = "", onToggleFavourite, onSelectProject, onNewProject }) {
+  const [typeFilter, setTypeFilter] = useState("All");
   const [sortBy, setSortBy] = useState("dateUpdated");
   const [sortOrder, setSortOrder] = useState("desc");
-  const [searchTerm] = useState("");
 
-  const filteredProjects = allProjects
-    .filter((project) => {
-      const matchesSearch =
-        project.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        project.id.toLowerCase().includes(searchTerm.toLowerCase());
-      const matchesType =
-        projectTypeFilter === "All" || project.type === projectTypeFilter;
-      return matchesSearch && matchesType;
-    })
+  const q = search.trim().toLowerCase();
+  const rows = allProjects
+    .filter((p) => !q || `${p.name} ${p.id} ${p.teamLead}`.toLowerCase().includes(q))
+    .filter((p) => typeFilter === "All" || p.type === typeFilter)
     .sort((a, b) => {
-      let comparison = 0;
-      if (sortBy === "name") {
-        comparison = a.name.localeCompare(b.name);
-      } else if (sortBy === "dateUpdated" || sortBy === "dateCreated") {
-        comparison = new Date(a[sortBy]) - new Date(b[sortBy]);
-      } else if (sortBy === "progress") {
-        comparison = a.progress - b.progress;
-      }
-
-      return sortOrder === "asc" ? comparison : -comparison;
+      let c = 0;
+      if (sortBy === "name") c = a.name.localeCompare(b.name);
+      else if (sortBy === "progress") c = a.progress - b.progress;
+      else c = new Date(a[sortBy]) - new Date(b[sortBy]);
+      return sortOrder === "asc" ? c : -c;
     });
 
-  function getProgressColor(progress) {
-    if (progress >= 70) return "text-[#319F43] bg-[#E1F7E6]";
-    if (progress >= 40) return "text-[#FFC54D] bg-[#FFF8E5]";
-    return "text-[#FF264D] bg-[#FFE7EB]";
-  }
-
   return (
-    <div className="p-6 rounded-xl shadow-lg mt-8 flex flex-col h-full">
-      <div className="flex justify-between items-center mb-6">
+    <section className="mt-8 flex flex-col rounded-xl p-4 sm:p-6 shadow-lg">
+      <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
         <div>
-          <h3 className="text-2xl font-semibold text-black">All Projects</h3>
-          <div>
-            {" "}
+          <h2 className="text-2xl font-semibold text-black">All Projects</h2>
+          <div className="mt-1 flex items-center gap-1">
             <select
-              className="rounded-lg px-3 text-black outline-none text-sm"
+              className="rounded-lg py-1 text-sm text-black outline-none"
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
+              aria-label="Sort projects by"
             >
-              <option value="dateUpdated">Sort by Date Updated</option>
-              <option value="name">Sort by Name</option>
-              <option value="progress">Sort by Progress</option>
-              <option value="dateCreated">Sort by Date Created</option>
+              <option value="dateUpdated">Sort by date updated</option>
+              <option value="dateCreated">Sort by date created</option>
+              <option value="name">Sort by name</option>
+              <option value="progress">Sort by progress</option>
             </select>
             <button
-              className="text-black rounded-lg px-3 py-2 text-sm transition-colors durations-200"
-              onClick={() => setSortOrder(sortOrder === "asc" ? "dsc" : "asc")}
+              className="rounded-lg px-2 py-1 text-sm text-black hover:bg-gray-100"
+              onClick={() => setSortOrder((o) => (o === "asc" ? "desc" : "asc"))}
+              aria-label={`Sort ${sortOrder === "asc" ? "descending" : "ascending"}`}
             >
-              {sortOrder === "asc" ? "↑ Asc" : "↓ Dsc"}
+              {sortOrder === "asc" ? "↑ Ascending" : "↓ Descending"}
             </button>
           </div>
         </div>
 
-        <div className="flex items-center space-x-4 h-full">
-          <div className="border-[#1a1a2e] border-b-2 flex p-1">
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="flex rounded-lg bg-[#F2F2F2] p-1">
             {["All", "Team", "Solo"].map((type) => (
               <button
                 key={type}
-                className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors duration-200 ${
-                  projectTypeFilter === type
-                    ? "bg-[#6a5acd] text-white"
-                    : "text-gray-400 hover:text-black"
+                className={`rounded-md px-4 py-1.5 text-sm font-medium transition-colors ${
+                  typeFilter === type ? "bg-[#6a5acd] text-white" : "text-gray-500 hover:text-black"
                 }`}
-                onClick={() => setProjectTypeFilter(type)}
+                aria-pressed={typeFilter === type}
+                onClick={() => setTypeFilter(type)}
               >
                 {type}
               </button>
             ))}
           </div>
-
-          <button className="bg-[#6a5acd] text-white rounded-lg px-4 py-2 text-sm font-medium hover:bg-[#5a4bba] transition-colors duration-200">
-            {" "}
+          <button
+            onClick={onNewProject}
+            className="rounded-lg bg-[#6a5acd] px-4 py-2 text-sm font-medium text-white hover:bg-[#5a4bba]"
+          >
             New Project
           </button>
         </div>
       </div>
-      <div className="overflow-auto custom-scrollbar flex-grow rounded-lg min-h-0 flex flex-col h-full">
-        <table className="w-full text-left table-auto border-separate border-spacing-0">
-          <thead className="sticky top-0  z-10 text-black text-sm uppercase">
-            <tr className="bg-[#F2F2F2] text-black text-sm uppercase">
-              <th className="py-3 px-4 pl-[22px] font-medium roounded-tr-lg">
-                <AiFillHeart className="text-xl text-[#4D4D4D] transition-colors duration-200 hover:scale-110" />
+
+      <div className="overflow-x-auto custom-scrollbar rounded-lg">
+        <table className="w-full min-w-[640px] table-auto border-separate border-spacing-0 text-left">
+          <thead className="text-sm uppercase text-black">
+            <tr className="bg-[#F2F2F2]">
+              <th className="rounded-tl-lg py-3 pl-[22px] pr-2 font-medium">
+                <span className="sr-only">Favourite</span>
+                <AiFillHeart className="text-xl text-[#4D4D4D]" aria-hidden="true" />
               </th>
-              <th className="py-3 px-3 font-medium rounded-tl-lg">
-                Poject Name
-              </th>
-              <th className="py-3 px-4 font-medium">ID</th>
-              <th className="py-3 px-4 font-medium text-center">Type</th>
-              <th className="py-3 px-4 font-medium">Team Lead</th>
-              <th className="py-3 px-4 font-medium text-center">Progress</th>
-              <th className="py-3 px-4 font-medium">Date</th>
-              <th className="py-3 px-4 font-medium">
-                <HiOutlineDotsHorizontal className="text-xl text-[#666666]" />
-              </th>
-              <th className="py-3 px-4 font-medium">
-                <IoMdShare className="text-xl text-[#666666]" />
-              </th>
+              <th className="px-3 py-3 font-medium">Project name</th>
+              <th className="px-4 py-3 font-medium">ID</th>
+              <th className="px-4 py-3 text-center font-medium">Type</th>
+              <th className="px-4 py-3 font-medium">Team lead</th>
+              <th className="px-4 py-3 text-center font-medium">Progress</th>
+              <th className="rounded-tr-lg px-4 py-3 font-medium">Updated</th>
             </tr>
           </thead>
           <tbody>
-            {filteredProjects.length === 0
-              ? null
-              : filteredProjects.map((project) => (
-                  <tr
-                    key={project.id}
-                    onClick={() => onSelectProject(project.id)}
-                    className="hover:bg-[#F2F2F2] cursor-pointer"
-                  >
-                    <td className="py-3 px-4 text-gray-400 border-[#F2F2F2] border-b">
-                      <span
-                        className="cursor-pointer flex items-center justify-center w-8 h-8"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onToggleFavourite(project.id);
-                        }}
-                        role="button"
-                        aria-label={`Toggle favourite for ${project.name}`}
-                      >
-                        {project.isFavourite ? (
-                          <AiFillHeart className="text-xl text-[#903DE2] transition-colors duration-200 hover:scale-110" />
-                        ) : (
-                          <AiOutlineHeart className="text-xl text-[#4D4D4D] transition-colors duration-200 hover:scale-110" />
-                        )}
-                      </span>
-                    </td>
-                    <td className="py-4 px-3 text-black flex items-center gap-2 border-[#F2F2F2] border-b">
-                      {project.name}
-                    </td>
-                    <td className="py-3 px-4 text-black text-sm border-[#F2F2F2] border-b">
-                      {project.id}
-                    </td>
-                    <td className="py-3 px-4 text-black text-sm text-center border-[#F2F2F2] border-b">
-                      {project.type}
-                    </td>
-                    <td className="py-3 px-4 text-black text-sm border-[#F2F2F2] border-b">
-                      {project.teamLead}
-                    </td>
-                    <td className="py-1 px-2 text-black text-sm text-center border-[#F2F2F2] border-b">
-                      <span
-                        className={`py-2 px-4 rounded-md font-medium ${getProgressColor(
-                          project.progress
-                        )}`}
-                      >
-                        {project.progress}%
-                      </span>
-                    </td>
-                    <td className="py-3 px-4 text-black text-sm border-[#F2F2F2] border-b">
-                      {project.dateUpdated}
-                    </td>
-                    <td className="py-3 px-4 text-black text-sm border-[#F2F2F2] border-b">
-                      <HiOutlineDotsHorizontal className="text-xl text-[#666666]" />
-                    </td>
-                    <td className="py-3 px-4 text-gray-400 text-sm border-[#F2F2F2] border-b">
-                      <IoMdShare className="text-xl text-[#666666]" />
-                    </td>
-                  </tr>
-                ))}
+            {rows.length === 0 ? (
+              <tr>
+                <td colSpan={7} className="py-10 text-center text-sm text-gray-500">
+                  No projects match.
+                </td>
+              </tr>
+            ) : (
+              rows.map((project) => (
+                <tr
+                  key={project.id}
+                  onClick={() => onSelectProject(project.id)}
+                  className="cursor-pointer hover:bg-[#F7F7F7]"
+                >
+                  <td className="border-b border-[#F2F2F2] px-4 py-3">
+                    <button
+                      className="flex h-8 w-8 items-center justify-center"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onToggleFavourite(project.id);
+                      }}
+                      aria-label={`${project.isFavourite ? "Remove" : "Add"} ${project.name} ${project.isFavourite ? "from" : "to"} favourites`}
+                      aria-pressed={project.isFavourite}
+                    >
+                      {project.isFavourite ? (
+                        <AiFillHeart className="text-xl text-[#903DE2] transition-transform hover:scale-110" />
+                      ) : (
+                        <AiOutlineHeart className="text-xl text-[#4D4D4D] transition-transform hover:scale-110" />
+                      )}
+                    </button>
+                  </td>
+                  <td className="border-b border-[#F2F2F2] px-3 py-4 text-black">{project.name}</td>
+                  <td className="border-b border-[#F2F2F2] px-4 py-3 text-sm text-black">{project.id}</td>
+                  <td className="border-b border-[#F2F2F2] px-4 py-3 text-center text-sm text-black">{project.type}</td>
+                  <td className="border-b border-[#F2F2F2] px-4 py-3 text-sm text-black">{project.teamLead}</td>
+                  <td className="border-b border-[#F2F2F2] px-2 py-1 text-center text-sm">
+                    <span className={`rounded-md px-4 py-2 font-medium ${progressColor(project.progress)}`}>
+                      {project.progress}%
+                    </span>
+                  </td>
+                  <td className="border-b border-[#F2F2F2] px-4 py-3 text-sm text-black">{project.dateUpdated}</td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
       </div>
-    </div>
+    </section>
   );
 }
 

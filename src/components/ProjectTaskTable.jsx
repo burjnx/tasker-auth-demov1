@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { IoIosArrowForward, IoIosArrowDown } from "react-icons/io";
-import { RiTableFill } from "react-icons/ri";
 
 const getStatusBadge = (status) => {
+  if (!status) return <span className="text-gray-400">-</span>;
   switch (status.toLowerCase()) {
     case "completed":
       return (
@@ -28,6 +28,8 @@ const getStatusBadge = (status) => {
           TO DO
         </span>
       );
+    default:
+      return <span className="font-medium">{status.toUpperCase()}</span>;
   }
 };
 
@@ -47,19 +49,21 @@ const getEpicStatus = (epic) => {
   return "IN PROGRESS";
 };
 
-function ProjectTaskTable({ projectHierarchy }) {
-  const [expanded, setExpanded] = useState([]);
+// When searching, every level is opened so matching tasks are visible
+function ProjectTaskTable({ projectHierarchy, forceExpand = false }) {
+  const [open, setOpen] = useState({});
+  const isOpen = (id) => forceExpand || !!open[id];
 
   const toggleExpanded = (id) => {
-    setExpanded((prev) => ({ ...prev, [id]: !prev[id] }));
+    setOpen((prev) => ({ ...prev, [id]: !prev[id] }));
   };
   return (
-    <div className="flex-grow min-h-0 overflow-auto custom-scrollbar rounded-xl border border-[#999999]">
-      <table className="w-full text-left table-auto border-collapse">
+    <div className="overflow-x-auto custom-scrollbar rounded-xl border border-[#999999]">
+      <table className="w-full min-w-[760px] text-left table-auto border-collapse">
         <thead>
           <tr className="bg-[#F2F2F2] text-black text-[14px] uppercase sticky top-0 z-10 font-semibold">
             <th className="py-3 px-4 w-12 border border-[#999999]">
-              <input type="checkbox" className="size-[18px]" />
+              <input type="checkbox" className="size-[18px]" aria-label="Select all" />
             </th>
             <th className="py-3 px-4 w-12 border border-[#999999]">Type</th>
             <th className="py-3 px-4 w-12 border border-[#999999]">Id</th>
@@ -87,8 +91,10 @@ function ProjectTaskTable({ projectHierarchy }) {
                       <button
                         onClick={() => toggleExpanded(epic.id)}
                         className="text-black hover:font-black"
+                        aria-label={`${isOpen(epic.id) ? "Collapse" : "Expand"} ${epic.title}`}
+                        aria-expanded={isOpen(epic.id)}
                       >
-                        {expanded[epic.id] ? (
+                        {isOpen(epic.id) ? (
                           <IoIosArrowDown className="cursor-pointer" />
                         ) : (
                           <IoIosArrowForward className="cursor-pointer" />
@@ -113,7 +119,7 @@ function ProjectTaskTable({ projectHierarchy }) {
                     {epic.dateCreated}
                   </td>
                 </tr>
-                {expanded[epic.id] &&
+                {isOpen(epic.id) &&
                   epic.stories.map((story) => (
                     <React.Fragment key={story.id}>
                       <tr className="border-b border-[#999999]">
@@ -125,8 +131,10 @@ function ProjectTaskTable({ projectHierarchy }) {
                             <button
                               onClick={() => toggleExpanded(story.id)}
                               className="text-black hover:font-black"
+                              aria-label={`${isOpen(story.id) ? "Collapse" : "Expand"} ${story.title}`}
+                              aria-expanded={isOpen(story.id)}
                             >
-                              {expanded[story.id] ? (
+                              {isOpen(story.id) ? (
                                 <IoIosArrowDown className="cursor-pointer" />
                               ) : (
                                 <IoIosArrowForward className="cursor-pointer" />
@@ -151,7 +159,7 @@ function ProjectTaskTable({ projectHierarchy }) {
                           -
                         </td>
                       </tr>
-                      {expanded[story.id] &&
+                      {isOpen(story.id) &&
                         story.tasks.map((task, taskIndex) => {
                           const isLastTask =
                             taskIndex === story.tasks.length - 1;

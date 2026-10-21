@@ -1,232 +1,188 @@
-import React, { useEffect, useState } from "react";
-import mockProjects from "../../mock/project";
-import mockUsers from "../../mock/users";
-import mockEpics from "../../mock/epic";
-import mockTasks from "../../mock/tasks";
-import mockStories from "../../mock/stories";
-import { useParams, useNavigate } from "react-router-dom";
-import Header from "../../components/Header";
-import { IoIosArrowRoundBack, IoMdCalendar } from "react-icons/io";
-import { GoPersonFill } from "react-icons/go";
+import React, { useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { IoIosArrowRoundBack, IoMdCalendar, IoIosListBox } from "react-icons/io";
 import { GiShare } from "react-icons/gi";
 import { Search } from "lucide-react";
-import { TbMenuDeep } from "react-icons/tb";
-import { GoKebabHorizontal } from "react-icons/go";
 import { BsFillKanbanFill } from "react-icons/bs";
-import { IoIosListBox } from "react-icons/io";
 import { RiTableFill } from "react-icons/ri";
+import Header from "../../components/Header";
 import ProjectTaskTable from "../../components/ProjectTaskTable";
+import TaskBoard from "../../components/TaskBoard";
 import emptyImage from "../../assets/images/pana.png";
+import mockUsers from "../../mock/users";
+import { useData } from "../../context/DataContext";
+import { useToast } from "../../context/ToastContext";
 
-const getInitialAvaterColor = (name) => {
-  const colors = [
-    "bg-purple-600",
-    "bg-blue-600",
-    "bg-green-600",
-    "bg-yellow-600",
-    "bg-red-600",
-    "bg-indigo-600",
-    "bg-blue-600",
-    "bg-teal-600",
-  ];
+const AVATAR_COLORS = ["bg-purple-600", "bg-blue-600", "bg-green-600", "bg-yellow-600", "bg-red-600", "bg-indigo-600", "bg-teal-600"];
+
+const avatarColor = (name) => {
   let hash = 0;
-  for (let i = 0; i < name.length; i++) {
-    hash = name.charCodeAt(i) + ((hash << 5) - hash);
-  }
-  const index = Math.abs(hash) % colors.length;
-  return colors[index];
+  for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
+  return AVATAR_COLORS[Math.abs(hash) % AVATAR_COLORS.length];
 };
+
+const VIEWS = [
+  { name: "Table", icon: RiTableFill },
+  { name: "Board", icon: BsFillKanbanFill },
+  { name: "List", icon: IoIosListBox, soon: true },
+  { name: "Calendar", icon: IoMdCalendar, soon: true },
+];
 
 function ProjectDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const showToast = useToast();
+  const { projects, hierarchyFor } = useData();
+  const [view, setView] = useState("Table");
+  const [query, setQuery] = useState("");
 
-  const [project, setProject] = useState(null);
-  const [profiles, setProfies] = useState([]);
-  const [projectHierarchy, setProjectHierarchy] = useState([]);
+  const project = projects.find((p) => p.id === id);
+  const visible = mockUsers.slice(0, 4);
+  const hiddenCount = mockUsers.length - visible.length;
 
-  const maxVisibleProfiles = 4;
-  const visibleProfiles = profiles.slice(0, maxVisibleProfiles);
-  const hiddenCount = profiles.length - maxVisibleProfiles;
+  if (!project) {
+    return (
+      <div>
+        <Header />
+        <div className="flex flex-col items-center py-16 text-center">
+          <img src={emptyImage} alt="" className="mb-4 w-32" />
+          <h2 className="text-xl font-semibold text-black">Project not found</h2>
+          <p className="mt-1 text-[#808080]">It may have been removed, or the link is wrong.</p>
+          <button
+            onClick={() => navigate("/projects")}
+            className="mt-5 rounded-[10px] bg-[#903DE2] px-5 py-2.5 text-sm font-medium text-white hover:bg-[#7c2bd9]"
+          >
+            Back to projects
+          </button>
+        </div>
+      </div>
+    );
+  }
 
-  useEffect(() => {
-    const found = mockProjects.find((p) => p.id === id);
-    setProject(found);
-    setProfies(mockUsers);
-
-    if (found) {
-      const epicsForProject = mockEpics.filter(
-        (epic) => epic.projectId === found.id
-      );
-
-      const structuredData = epicsForProject.map((epic) => {
-        const storiesForEpic = mockStories.filter(
-          (story) => story.epicId === epic.id
-        );
-        const storiesWithTasks = storiesForEpic.map((story) => ({
+  // Filter tasks by the search box; drop stories and epics with no matches
+  const q = query.trim().toLowerCase();
+  const hierarchy = hierarchyFor(project.id)
+    .map((epic) => ({
+      ...epic,
+      stories: epic.stories
+        .map((story) => ({
           ...story,
-          tasks: mockTasks.filter((task) => task.storyId === story.id),
-        }));
-        return { ...epic, stories: storiesWithTasks };
-      });
-      setProjectHierarchy(structuredData);
+          tasks: story.tasks.filter((t) => !q || `${t.title} ${t.assignee} ${t.id}`.toLowerCase().includes(q)),
+        }))
+        .filter((story) => !q || story.tasks.length > 0),
+    }))
+    .filter((epic) => !q || epic.stories.length > 0);
+  const boardTasks = hierarchy.flatMap((e) => e.stories.flatMap((s) => s.tasks.map((t) => ({ ...t, storyTitle: s.title }))));
+  const hasAnyTasks = hierarchyFor(project.id).some((e) => e.stories.some((s) => s.tasks.length));
+
+  const share = async () => {
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      showToast("Project link copied");
+    } catch {
+      showToast("Couldn't copy the link");
     }
-  }, [id]);
+  };
+
+  const empty = (
+    <div className="flex flex-col items-center rounded-xl border border-[#E6E6E6] py-12 text-center">
+      <img src={emptyImage} alt="" className="mb-4 h-24 w-24 object-contain" />
+      <p className="font-semibold text-[#4D4D4D]">{q ? "No tasks match your search." : "No tasks added yet."}</p>
+    </div>
+  );
 
   return (
     <div>
-      {" "}
       <Header />
-      <div className="space-y-20 flex-grow flex flex-col p-5 overflow-hidden">
-        {project ? (
-          <>
-            <div className="flex justify-between items-center flex-shrink-0">
-              <div className="flex items-center gap-4">
-                <button
-                  onClick={() => navigate(-1)}
-                  className="text-gray-600 hover:text-black"
+      <div className="flex flex-col gap-8 pt-6">
+        {/* Title row */}
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex items-start gap-3 min-w-0">
+            <button onClick={() => navigate(-1)} className="mt-1 text-gray-600 hover:text-black" aria-label="Back">
+              <IoIosArrowRoundBack className="size-[28px]" />
+            </button>
+            <div className="min-w-0">
+              <h2 className="text-[22px] sm:text-[24px] leading-tight text-black">{project.name}</h2>
+              <p className="text-[15px] text-[#999999]">
+                {project.id} · {project.type} · Created {project.dateCreated}
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-3 pl-10 sm:pl-0">
+            <div className="flex -space-x-2 p-1" aria-label={`${mockUsers.length} team members`}>
+              {visible.map((member, index) => (
+                <div
+                  key={member.id}
+                  title={member.name}
+                  className={`flex size-10 items-center justify-center rounded-full text-sm font-bold text-white ring-2 ring-white ${avatarColor(member.name)}`}
+                  style={{ zIndex: visible.length - index }}
                 >
-                  <IoIosArrowRoundBack className="size-[25px] cursor-pointer" />
-                </button>
-                <div>
-                  <h2 className="text-[24px] text-[#000000]">{project.name}</h2>
-                  <p className="text-[16px] text-[#999999]">
-                    Created: {project.dateCreated}
-                  </p>
+                  {member.name.charAt(0).toUpperCase()}
                 </div>
-              </div>
-              <div className="flex items-center gap-4">
-                <div className="flex -space-x-2 overflow-hidden p-2">
-                  {visibleProfiles.map((profile, index) => (
-                    <>
-                      <div
-                        key={profile.id}
-                        className={`size-10 rounded-full ring-2 ring-white flex items-center justify-center text-sm font-bold text-white transition-transform duration-200 ease-in-out hover:scale-110 hover:z-10 ${getInitialAvaterColor(
-                          profile.name
-                        )}`}
-                        style={{
-                          zIndex: visibleProfiles.length - index,
-                          marginLeft: index > 0 ? "-1px" : "0",
-                        }}
-                      >
-                        {profile.name.charAt(0).toUpperCase()}
-                      </div>
-                    </>
-                  ))}{" "}
-                  {hiddenCount > 0 && (
-                    <>
-                      <div
-                        className="size-10 rounded-full bg-[#f0d8ff] text-[#903DE2] flex items-center justify-center text-[16px] font-bold ring-2 ring-white"
-                        style={{
-                          marginLeft: visibleProfiles.length > 0 ? "-1px" : "0",
-                        }}
-                      >
-                        +{hiddenCount}
-                      </div>
-                    </>
-                  )}
+              ))}
+              {hiddenCount > 0 && (
+                <div className="flex size-10 items-center justify-center rounded-full bg-[#f0d8ff] text-[15px] font-bold text-[#903DE2] ring-2 ring-white">
+                  +{hiddenCount}
                 </div>
-                <button className="text-[#999999] border-2 border-[#CCCCCC] rounded-[10px] p-2 text-sm font-medium">
-                  <GiShare size={30} />
-                </button>{" "}
-              </div>
+              )}
             </div>
-            <div className="mb-6 flex justify-between">
-              <div className="flex rounded-lg p-1">
-                {[
-                  { name: "Table", icon: <RiTableFill /> },
-                  { name: "Board", icon: <BsFillKanbanFill /> },
-                  { name: "List", icon: <IoIosListBox /> },
-                  { name: "Calendar", icon: <IoMdCalendar /> },
-                ].map((tab) => (
-                  <button
-                    key={tab.name}
-                    className={`flex items-center gap-2 px-4 py-2 text-[16px] font-medium transition-colors duration-200 ${
-                      tab.name === "Table"
-                        ? "border-b-2 border-[#903DE2] text-[#903DE2]"
-                        : "text-[#808080] hover:text-black"
-                    }`}
-                  >
-                    {tab.icon}
-                    {tab.name}
-                  </button>
-                ))}
-              </div>
-              <div className="flex items-center space-x-2">
-                <div className="relative">
-                  <input
-                    type="text"
-                    placeholder="Search Task..."
-                    className="pl-4 pr-10 py-2 rounded-md border-none bg-[#F2F2F2] focus:outline-[#903DE2] w-64 md:w-84 placeholder:text-sm placeholder:font-semibold text-[#999999]"
-                  />
-                  <Search
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-[#903DE2]"
-                    size={18}
-                  />
-                </div>
-                <div className="flex items-center justify-center  p-2 bg-[#F2F2F2]">
-                  <TbMenuDeep size={20} />
-                </div>
-                <div className="flex items-center justify-center  p-2 bg-[#F2F2F2]">
-                  <GoKebabHorizontal size={20} />
-                </div>
-              </div>
-            </div>
-            {projectHierarchy.length > 0 ? (
-              <ProjectTaskTable projectHierarchy={projectHierarchy} />
-            ) : (
-              <div className="flex-grow min-h-0 overflow-y-auto custom-scrollbar rounded-xl border border-[#999999]">
-                <table className="w-full text-left table-auto border-collapse">
-                  <thead>
-                    <tr className="bg-[#F2F2F2] text-black text-[14px] uppercase sticky top-0 z-10 font-semibold">
-                      <th className="py-3 px-4 w-12 border border-[#999999]">
-                        <input type="checkbox" className="size-[18px]" />
-                      </th>
-                      <th className="py-3 px-4 w-12 border border-[#999999]">
-                        Type
-                      </th>
-                      <th className="py-3 px-4 w-12 border border-[#999999]">
-                        Id
-                      </th>
-                      <th className="py-3 px-4 w-12 border border-[#999999]">
-                        Description
-                      </th>
-                      <th className="py-3 px-4 w-12 border border-[#999999]">
-                        Status
-                      </th>
-                      <th className="py-3 px-4 w-12 border border-[#999999]">
-                        Assignee
-                      </th>
-                      <th className="py-3 px-4 w-12 border border-[#999999]">
-                        Date created
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td
-                        colSpan={7}
-                        className="text-center py-10 text-gray-400 font-semibold"
-                      >
-                        <div className="flex flex-col items-center justify-center space-y-4">
-                          <img
-                            src={emptyImage}
-                            alt="No tasks"
-                            className="w-24 h-24 object-contain"
-                          />
-                          <p className="text-[#4D4D4D] text-[16px] font-semibold text-sm">
-                            No tasks added yet.
-                          </p>
-                        </div>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </>
-        ) : (
-          <p className="text-gray-300">No project details</p>
+            <button
+              onClick={share}
+              className="rounded-[10px] border-2 border-[#CCCCCC] p-2 text-[#999999] hover:border-[#903DE2] hover:text-[#903DE2]"
+              aria-label="Copy project link"
+            >
+              <GiShare size={24} />
+            </button>
+          </div>
+        </div>
+
+        {/* View tabs + task search */}
+        <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+          <div className="flex overflow-x-auto no-scrollbar" role="tablist">
+            {VIEWS.map(({ name, icon, soon }) => (
+              <button
+                key={name}
+                role="tab"
+                aria-selected={view === name}
+                onClick={() => setView(name)}
+                className={`flex shrink-0 items-center gap-2 px-4 py-2 text-[15px] font-medium transition-colors ${
+                  view === name ? "border-b-2 border-[#903DE2] text-[#903DE2]" : "border-b-2 border-transparent text-[#808080] hover:text-black"
+                }`}
+              >
+                {React.createElement(icon)}
+                {name}
+                {soon && <span className="rounded bg-gray-100 px-1.5 text-[10px] uppercase text-gray-500">Soon</span>}
+              </button>
+            ))}
+          </div>
+          <div className="relative w-full lg:w-80">
+            <input
+              type="search"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Search tasks..."
+              aria-label="Search tasks in this project"
+              className="w-full rounded-md bg-[#F2F2F2] py-2 pl-4 pr-10 text-black focus:outline-[#903DE2] placeholder:text-sm placeholder:font-semibold placeholder:text-[#999999]"
+            />
+            <Search className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[#903DE2]" size={18} />
+          </div>
+        </div>
+
+        {/* Views */}
+        {view === "Table" &&
+          (hierarchy.length > 0 ? <ProjectTaskTable projectHierarchy={hierarchy} forceExpand={!!q} /> : empty)}
+        {view === "Board" && (hasAnyTasks && boardTasks.length > 0 ? <TaskBoard tasks={boardTasks} /> : empty)}
+        {(view === "List" || view === "Calendar") && (
+          <div className="flex flex-col items-center rounded-xl border border-dashed border-[#CCCCCC] py-14 text-center">
+            <p className="text-lg font-semibold text-black">{view} view is coming soon</p>
+            <p className="mt-1 text-[#808080]">Try the Board view to drag tasks between statuses.</p>
+            <button
+              onClick={() => setView("Board")}
+              className="mt-5 rounded-[10px] bg-[#903DE2] px-5 py-2.5 text-sm font-medium text-white hover:bg-[#7c2bd9]"
+            >
+              Open Board
+            </button>
+          </div>
         )}
       </div>
     </div>

@@ -1,49 +1,43 @@
-import React, { useState } from "react";
+import React, { useId, useState } from "react";
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa6";
-import { useLocation } from "react-router-dom";
 
-function Input({ value, onChange, label, placeholder, type }) {
+function Input({ value, onChange, label, placeholder, type = "text", error, autoComplete }) {
   const [showPassword, setShowPassword] = useState(false);
-
-  const location = useLocation();
-  const isLogin = location.pathname === "/login";
-
-  function toggleShowPassword() {
-    setShowPassword(!showPassword);
-  }
+  const id = useId();
+  const isPassword = type === "password";
 
   return (
-    <div className={isLogin ? "mt-8" : "mt-2"}>
-      <label className="text-[16px] text-black font-semibold">{label}</label>
+    <div className="mt-4 w-full md:w-auto">
+      <label htmlFor={id} className="text-[16px] text-black font-semibold">
+        {label}
+      </label>
 
-      <div className="input-box">
+      <div className={`input-box ${error ? "border-red-400" : ""}`}>
         <input
-          type={
-            type == "password" ? (showPassword ? "text" : "password") : type
-          }
+          id={id}
+          type={isPassword && !showPassword ? "password" : isPassword ? "text" : type}
           placeholder={placeholder}
+          autoComplete={autoComplete}
+          aria-invalid={!!error}
           className="w-full bg-transparent outline-none text-black"
           value={value}
-          onChange={(e) => onChange(e)}
+          onChange={onChange}
         />
-        {type === "password" && (
-          <>
+        {isPassword && (
+          <button
+            type="button"
+            onClick={() => setShowPassword((s) => !s)}
+            aria-label={showPassword ? "Hide password" : "Show password"}
+          >
             {showPassword ? (
-              <FaRegEye
-                size={22}
-                className="cursor-pointer text-[#903DE2]"
-                onClick={() => toggleShowPassword()}
-              />
+              <FaRegEye size={22} className="text-[#903DE2]" />
             ) : (
-              <FaRegEyeSlash
-                size={22}
-                className="text-slate-400 cursor-pointer"
-                onClick={() => toggleShowPassword()}
-              />
+              <FaRegEyeSlash size={22} className="text-slate-400" />
             )}
-          </>
+          </button>
         )}
       </div>
+      {error && <p className="text-red-500 text-xs mt-1 ml-1">{error}</p>}
     </div>
   );
 }

@@ -1,61 +1,59 @@
 import React from "react";
 import { AiOutlineHeart, AiFillHeart } from "react-icons/ai";
 
+const COLORS = ["#6A5ACD", "#20B2AA", "#D9488F", "#4169E1", "#B22222", "#B8860B", "#4F7FD9"];
+
+// Original colours for the sample projects; new projects get one from the palette
+const FIXED = {
+  PRJ001: "#6A5ACD", PRJ002: "#20B2AA", PRJ003: "#FF69B4", PRJ004: "#4169E1",
+  PRJ005: "#B22222", PRJ006: "#DAA520", PRJ007: "#6495ED",
+};
+
+function cardColor(id) {
+  if (FIXED[id]) return FIXED[id];
+  let hash = 0;
+  for (const ch of id) hash = (hash * 31 + ch.charCodeAt(0)) >>> 0;
+  return COLORS[hash % COLORS.length];
+}
+
 function ProjectCard({ project, onToggleFavourite, onSelectProject }) {
   const { name, id, progress, isFavourite } = project;
-  const getCardBackgroundColor = (projectId) => {
-    const colors = {
-      PRJ001: "#6A5ACD",
-      PRJ002: "#20B2AA",
-      PRJ003: "#FF69B4",
-      PRJ004: "#4169E1",
-      PRJ005: "#B22222",
-      PRJ006: "#DAA520",
-      PRJ007: "#6495ED",
-    };
-    return colors[projectId] || "#6A5ACD";
-  };
 
   return (
     <div
-      className="rounded-xl px-5 pt-2 text-whit flex flex-col min-h-[140px] min-w-[240px] shadow-md relative cursor-pointer hover:scale-[1.02] transition-transform duration-200
-      "
-      style={{ backgroundColor: getCardBackgroundColor(id) }}
+      role="link"
+      tabIndex={0}
       onClick={() => onSelectProject(id)}
+      onKeyDown={(e) => e.key === "Enter" && onSelectProject(id)}
+      className="relative flex min-h-[140px] w-[240px] shrink-0 cursor-pointer flex-col justify-between rounded-xl px-5 pt-5 pb-3 text-white shadow-md transition-transform duration-200 hover:scale-[1.02] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#903DE2]"
+      style={{ backgroundColor: cardColor(id) }}
     >
-      <div className="flex flex-col justify-between items-start mb-1">
-        <h3 className="text-[16px] text-white font-bold mt-5">{name}</h3>
-
-        <p className="text-[16px] text-gray-200 mb-4">{id}</p>
-        <div
-          className="w-full bg-white/[.2] roundd-md transition-all duration-300 eas-in-out"
-          style={{ width: `${progress}%` }}
-        ></div>
+      <div className="pr-8">
+        <h3 className="text-[16px] font-bold leading-snug">{name}</h3>
+        <p className="text-[14px] text-white/80">{id}</p>
       </div>
-      <span
-        className="absolute right-2 cursor-pointer flex items-center justify-center w-8 h-8"
+      <button
+        className="absolute right-3 top-3 flex h-8 w-8 items-center justify-center"
         onClick={(e) => {
           e.stopPropagation();
           onToggleFavourite(id);
         }}
-        role="button"
-        aria-label={
-          isFavourite ? "Remove from favourites" : "Add to favourites"
-        }
+        aria-label={isFavourite ? `Remove ${name} from favourites` : `Add ${name} to favourites`}
+        aria-pressed={isFavourite}
       >
         {isFavourite ? (
-          <AiFillHeart className="size-[24px] text-white transition-color duration-200 hover:scale-110" />
+          <AiFillHeart className="size-[24px] transition-transform hover:scale-110" />
         ) : (
-          <AiOutlineHeart className="text-2xl text-white transition-color duration-200 hover:scale-110" />
+          <AiOutlineHeart className="size-[24px] transition-transform hover:scale-110" />
         )}
-      </span>
+      </button>
       <div>
-        <span className="text-[12px] font-medium text-white">Progress</span>
-        <div className="w-full bg-white/[.2] rounded-md h-[5px] overflow-hidden mt-1 mb-1">
-          <div
-            className="h-full bg-white rounded-md transition-all duration-300 eas-in-out"
-            style={{ width: `${progress}%` }}
-          ></div>
+        <div className="flex justify-between text-[12px] font-medium">
+          <span>Progress</span>
+          <span>{progress}%</span>
+        </div>
+        <div className="mt-1 h-[5px] w-full overflow-hidden rounded-md bg-white/25">
+          <div className="h-full rounded-md bg-white" style={{ width: `${progress}%` }} />
         </div>
       </div>
     </div>

@@ -1,4 +1,4 @@
-import React, { Children } from "react";
+import React from "react";
 import SIGNUP_IMG from "../../assets/images/amico.svg";
 
 function AuthLayout({
@@ -13,7 +13,7 @@ function AuthLayout({
         <h2 className="text-[28.17px] font-black text-white self-start">
           Tasker
         </h2>
-        <img className="w-2/3 mx-16 " src={image} alt="Demo SignUP/SignIn Image" />
+        <img className="w-2/3 mx-16 " src={image} alt="" />
         <div className="w-full break-words">
           <h2 className="text-[40px] text-white font-bold">{title}</h2>
           <p className="text-white text-xl">
@@ -22,7 +22,7 @@ function AuthLayout({
         </div>
       </div>
 
-      <div className="w-screen min-h-screen md:w-[60vw] px-12 pt-8 pb-12 flex justify-center items-start ">
+      <div className="flex-1 min-w-0 min-h-screen px-4 sm:px-8 lg:px-12 pt-8 pb-12 flex justify-center items-start">
         {children}
       </div>
     </div>

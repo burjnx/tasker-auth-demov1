@@ -1,154 +1,55 @@
 import React, { useState } from "react";
+import { MdTask } from "react-icons/md";
 import TaskItem from "./TaskItem";
 import EmptyImage from "../assets/images/pana.png";
-import { MdTask } from "react-icons/md";
+import { useData, taskStatus } from "../context/DataContext";
 
-const dummyTasks = [
-  {
-    id: 1,
-    title: "Design Login UI",
-    project: "Tasker App",
-    type: "Design",
-    dueDate: "2025-07-15",
-    status: "Completed",
-  },
-  {
-    id: 2,
-    title: "API Integration",
-    project: "Tasker App",
-    type: "Development",
-    dueDate: "2025-07-20",
-    status: "Pending",
-  },
-  {
-    id: 3,
-    title: "Fix deadline bug",
-    project: "Tasker Admin",
-    type: "Bug",
-    dueDate: "2025-07-09",
-    status: "Overdue",
-  },
-  {
-    id: 4,
-    title: "Design Login UI",
-    project: "Tasker App",
-    type: "Design",
-    dueDate: "2025-07-15",
-    status: "Completed",
-  },
-  {
-    id: 5,
-    title: "API Integration",
-    project: "Tasker App",
-    type: "Development",
-    dueDate: "2025-07-20",
-    status: "Pending",
-  },
-  {
-    id: 6,
-    title: "Fix deadline bug",
-    project: "Tasker Admin",
-    type: "Bug",
-    dueDate: "2025-07-09",
-    status: "Overdue",
-  },
-  {
-    id: 7,
-    title: "Design Login UI",
-    project: "Tasker App",
-    type: "Design",
-    dueDate: "2025-07-15",
-    status: "Completed",
-  },
-  {
-    id: 8,
-    title: "API Integration",
-    project: "Tasker App",
-    type: "Development",
-    dueDate: "2025-07-20",
-    status: "Pending",
-  },
-  {
-    id: 9,
-    title: "Fix deadline bug",
-    project: "Tasker Admin",
-    type: "Bug",
-    dueDate: "2025-07-09",
-    status: "Overdue",
-  },
-  {
-    id: 10,
-    title: "Design Login UI",
-    project: "Tasker App",
-    type: "Design",
-    dueDate: "2025-07-15",
-    status: "Completed",
-  },
-  {
-    id: 11,
-    title: "API Integration",
-    project: "Tasker App",
-    type: "Development",
-    dueDate: "2025-07-20",
-    status: "Pending",
-  },
-  {
-    id: 12,
-    title: "Fix deadline bug",
-    project: "Tasker Admin",
-    type: "Bug",
-    dueDate: "2025-07-09",
-    status: "Overdue",
-  },
-];
+const FILTERS = ["All", "Pending", "Overdue", "Completed"];
 
-const TaskSection = () => {
+const TaskSection = ({ search = "" }) => {
+  const { dashboardTasks, toggleDashboardTask } = useData();
   const [filter, setFilter] = useState("All");
 
-  const filteredTasks =
-    filter === "All"
-      ? dummyTasks
-      : dummyTasks.filter((task) => task.status === filter);
+  const q = search.trim().toLowerCase();
+  const tasks = dashboardTasks
+    .filter((t) => filter === "All" || taskStatus(t) === filter)
+    .filter((t) => !q || `${t.title} ${t.project} ${t.type}`.toLowerCase().includes(q))
+    .sort((a, b) => Number(a.done) - Number(b.done) || a.dueDate.localeCompare(b.dueDate));
 
   return (
-    <div className="mt-10 space-y-6 p-4 border border-[#CCCCCC] rounded-xl w-full md:w-1/2">
-      {/* Header */}
-      <div className="flex justify-between items-center">
-        <div className="text-xl font-medium flex items-center gap-1">
-          <MdTask size={20} className="text-[#4D4D4D]  " />
-          <h3 className="text-black">Tasks</h3>
-        </div>
-
-        <select
-          value={filter}
-          onChange={(e) => setFilter(e.target.value)}
-          className="text-sm focus:outline-[#903DE2]"
-        >
-          <option value="All" disabled>
-            Sort by
-          </option>
-          <option value="Completed">Completed</option>
-          <option value="Pending">Pending</option>
-          <option value="Overdue">Overdue</option>
-        </select>
+    <section className="space-y-5 p-4 border border-[#CCCCCC] rounded-xl w-full lg:w-1/2 min-w-0">
+      <div className="flex justify-between items-center gap-3">
+        <h2 className="text-xl font-medium flex items-center gap-1 text-black">
+          <MdTask size={20} className="text-[#4D4D4D]" />
+          Tasks
+        </h2>
+        <label className="flex items-center gap-2 text-sm text-[#808080]">
+          Show
+          <select
+            value={filter}
+            onChange={(e) => setFilter(e.target.value)}
+            className="rounded-md border border-[#E6E6E6] px-2 py-1 text-sm text-black focus:outline-[#903DE2]"
+          >
+            {FILTERS.map((f) => <option key={f}>{f}</option>)}
+          </select>
+        </label>
       </div>
 
-      {/* Task List or Empty State */}
-      {filteredTasks.length === 0 ? (
-        <div className="flex flex-col items-center justify-center mt-8 min-h-[200px] ">
-          <div className="h-full">
-            <img src={EmptyImage} alt="No tasks" className=" mb-4" />
-            <p className="text-[#4D4D4D] text-sm">No tasks created yet</p>
-          </div>
+      {tasks.length === 0 ? (
+        <div className="flex flex-col items-center justify-center py-6 text-center">
+          <img src={EmptyImage} alt="" className="mb-4 w-32" />
+          <p className="text-[#4D4D4D] text-sm">
+            {q || filter !== "All" ? "No tasks match." : "No tasks yet. Use Add task to create one."}
+          </p>
         </div>
       ) : (
-        <div className="space-y-4 max-h-[300px] overflow-y-auto">
-          {filteredTasks.map((task) => (
-            <TaskItem key={task.id} task={task} />
+        <div className="space-y-3 max-h-[340px] overflow-y-auto pr-1">
+          {tasks.map((task) => (
+            <TaskItem key={task.id} task={task} onToggle={toggleDashboardTask} />
           ))}
         </div>
       )}
-    </div>
+    </section>
   );
 };
 
