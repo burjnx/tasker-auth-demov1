@@ -62,4 +62,4 @@ This is the **frontend**. The team's backend wasn't completed, so the app runs o
 
 ## My role
 
-Built in a team using Git branches and pull requests. I built the dashboard, projects page, project detail page and teams page, plus the shared layout and styling. I later completed the frontend on my own: the sign-up flow, protected routes, add-task and new-project forms, search, the Board view, Settings, and the tablet and phone layouts.
+I was on the **frontend team** (a separate team handled the backend). Working with Git branches and pull requests, I built the dashboard, projects page, project detail page and teams page. The other features in this demo were added after the internship to make it a complete, usable demo.
